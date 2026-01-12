@@ -21,8 +21,8 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t iamgodzillaha55/n8n-canvas:latest .
+          docker build -t godseventeen/n8n-canvas:latest .
 
       - name: Push image
         run: |
-          docker push iamgodzillaha55/n8n-canvas:latest
+          docker push godseventeen/n8n-canvas:latest
