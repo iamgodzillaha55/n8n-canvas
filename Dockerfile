@@ -1,14 +1,15 @@
-# ✅ Base ที่ชัวร์ 100%
-FROM node:18-bullseye
+# ============================================
+# Base: Official n8n (multi-arch, auto update)
+# ============================================
+FROM n8nio/n8n:latest
 
-ENV NODE_ENV=production
-
-# -------------------------
-# 1) ติดตั้ง OS deps สำหรับ canvas
-# -------------------------
+# ต้องเป็น root เพื่อ install libs
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+
+# ============================================
+# OS deps สำหรับ canvas (ARM + x86)
+# ============================================
+RUN apt-get update && apt-get install -y \
     libcairo2-dev \
     libpango1.0-dev \
     libjpeg-dev \
@@ -16,26 +17,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     librsvg2-dev \
     python3 \
     pkg-config \
-    tini \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# -------------------------
-# 2) ติดตั้ง n8n (ล็อกเวอร์ชัน)
-# -------------------------
-RUN npm install -g n8n@1.80.0
-
-# -------------------------
-# 3) ติดตั้ง canvas (เสถียรบน ARM)
-# -------------------------
+# ============================================
+# Install canvas (binary compatible)
+# ============================================
 RUN npm install -g canvas@2.11.2
 
-# -------------------------
-# 4) ใช้ user node ที่มีอยู่แล้ว
-# -------------------------
+# ============================================
+# กลับมาใช้ user node ของ n8n
+# ============================================
 USER node
 WORKDIR /home/node
 
-EXPOSE 5678
-
-ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["n8n"]
+# n8n image มี ENTRYPOINT + CMD อยู่แล้ว
+# ❌ ห้าม override
