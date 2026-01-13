@@ -1,8 +1,7 @@
-FROM n8nio/n8n:1.81.0
+FROM n8nio/n8n:1.81.0-debian
 
 USER root
 
-# OS deps required by canvas
 RUN apt-get update && apt-get install -y \
     build-essential \
     libcairo2-dev \
@@ -14,7 +13,6 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Install canvas compiled for THIS node + THIS OS
 RUN npm install -g canvas@2.11.2
 
 USER node
