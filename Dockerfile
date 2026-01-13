@@ -23,12 +23,11 @@ FROM n8nio/n8n:1.81.0
 
 USER root
 
-# copy canvas from builder
+# copy only the canvas node module
 COPY --from=canvas-builder /usr/local/lib/node_modules/canvas /usr/local/lib/node_modules/canvas
-COPY --from=canvas-builder /usr/local/bin/canvas /usr/local/bin/canvas || true
 
-# register canvas
-RUN npm link canvas
+# make it visible to node
+RUN npm link /usr/local/lib/node_modules/canvas
 
 USER node
 WORKDIR /home/node
