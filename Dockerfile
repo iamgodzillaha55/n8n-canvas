@@ -1,8 +1,8 @@
-############################
-# 1) Build canvas
-############################
-FROM node:20-bullseye AS canvas-builder
+FROM n8nio/n8n:1.81.0
 
+USER root
+
+# ติดตั้ง dependencies
 RUN apt-get update && apt-get install -y \
   build-essential \
   libcairo2-dev \
@@ -14,20 +14,12 @@ RUN apt-get update && apt-get install -y \
   pkg-config \
   && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g canvas@2.11.2
+# ติดตั้ง Canvas ใน n8n
+RUN cd /usr/local/lib/node_modules/n8n && \
+    npm install canvas@2.11.2
 
-############################
-# 2) n8n runtime
-############################
-FROM n8nio/n8n:1.81.0
-
-USER root
-
-# copy only the canvas node module
-COPY --from=canvas-builder /usr/local/lib/node_modules/canvas /usr/local/lib/node_modules/canvas
-
-# make it visible to node
-RUN npm link /usr/local/lib/node_modules/canvas
+# Label
+LABEL org.opencontainers.image.source="https://github.com/iamgodzillaha55/n8n-canvas"
+LABEL org.opencontainers.image.description="n8n with Canvas support"
 
 USER node
-WORKDIR /home/node
