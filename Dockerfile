@@ -2,17 +2,16 @@ FROM n8nio/n8n:1.81.0
 
 USER root
 
-# ติดตั้ง dependencies
-RUN apt-get update && apt-get install -y \
-  build-essential \
-  libcairo2-dev \
-  libpango1.0-dev \
-  libjpeg-dev \
-  libgif-dev \
-  librsvg2-dev \
-  python3 \
-  pkg-config \
-  && rm -rf /var/lib/apt/lists/*
+# ติดตั้ง dependencies สำหรับ Canvas (Alpine)
+RUN apk add --no-cache \
+    build-base \
+    cairo-dev \
+    pango-dev \
+    jpeg-dev \
+    giflib-dev \
+    librsvg-dev \
+    python3 \
+    pkgconfig
 
 # ติดตั้ง Canvas ใน n8n
 RUN cd /usr/local/lib/node_modules/n8n && \
