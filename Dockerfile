@@ -1,9 +1,8 @@
 # ============================================
-# Base: Official n8n (multi-arch, auto update)
+# Base: Debian version of n8n (has apt-get)
 # ============================================
-FROM n8nio/n8n:latest
+FROM n8nio/n8n:latest-debian
 
-# ต้องเป็น root เพื่อ install libs
 USER root
 
 # ============================================
@@ -21,15 +20,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================
-# Install canvas (binary compatible)
+# Install canvas
 # ============================================
 RUN npm install -g canvas@2.11.2
 
 # ============================================
-# กลับมาใช้ user node ของ n8n
+# กลับไปใช้ user n8n
 # ============================================
 USER node
 WORKDIR /home/node
-
-# n8n image มี ENTRYPOINT + CMD อยู่แล้ว
-# ❌ ห้าม override
