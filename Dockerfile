@@ -1,12 +1,13 @@
-FROM n8nio/n8n:latest-debian
+# ✅ Base ที่ชัวร์ 100%
+FROM node:18-bullseye
 
+ENV NODE_ENV=production
+
+# -------------------------
+# 1) ติดตั้ง OS deps สำหรับ canvas
+# -------------------------
 USER root
-
-# Fix Debian mirror + TLS for QEMU
-RUN echo "deb http://deb.debian.org/debian bookworm main contrib non-free" > /etc/apt/sources.list \
- && echo "deb http://security.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list \
- && apt-get -o Acquire::Retries=5 update \
- && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libcairo2-dev \
     libpango1.0-dev \
@@ -15,4 +16,26 @@ RUN echo "deb http://deb.debian.org/debian bookworm main contrib non-free" > /et
     librsvg2-dev \
     python3 \
     pkg-config \
- && rm -rf /var/lib/apt/lists/*
+    tini \
+    && rm -rf /var/lib/apt/lists/*
+
+# -------------------------
+# 2) ติดตั้ง n8n (ล็อกเวอร์ชัน)
+# -------------------------
+RUN npm install -g n8n@1.80.0
+
+# -------------------------
+# 3) ติดตั้ง canvas (เสถียรบน ARM)
+# -------------------------
+RUN npm install -g canvas@2.11.2
+
+# -------------------------
+# 4) ใช้ user node ที่มีอยู่แล้ว
+# -------------------------
+USER node
+WORKDIR /home/node
+
+EXPOSE 5678
+
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["n8n"]
